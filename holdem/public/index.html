@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Holdem-huone</title>
+<meta name="description" content="Pelaa Texas Hold'emia ystävien kanssa pelirahalla. Ei oikeaa rahaa.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d171d'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23c9a24b' stroke-width='4' stroke-dasharray='8 6'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23c9a24b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="banner" class="banner" hidden></div>
+
+<!-- Kirjautuminen -->
+<main id="screen-login" class="screen login" hidden>
+  <form id="login-form" class="login-card" autocomplete="off">
+    <h1 class="logo">Holdem-huone</h1>
+    <p class="lead">Texas Hold'em ystävien kesken. Valitse nimi ja aloita 10&nbsp;000 pelimerkillä.</p>
+    <label for="login-name">Pelaajanimi</label>
+    <input id="login-name" name="name" maxlength="16" minlength="2" required placeholder="esim. Maija" autocapitalize="off" spellcheck="false">
+    <p id="login-error" class="form-error" role="alert" hidden></p>
+    <button class="btn primary big" type="submit">Astu sisään</button>
+    <p class="fineprint">Pelataan pelkillä pelimerkeillä. Niillä ei ole rahallista arvoa, eikä niitä voi ostaa tai nostaa. Tilisi tunnistetaan tästä selaimesta, joten käytä samaa selainta jatkaaksesi myöhemmin.</p>
+  </form>
+</main>
+
+<!-- Aula -->
+<main id="screen-lobby" class="screen lobby" hidden>
+  <header class="topbar">
+    <span class="logo small">Holdem-huone</span>
+    <div class="topbar-right">
+      <span class="bank" title="Pankkisi"><span class="chip-dot"></span><span id="lobby-bank">0</span></span>
+      <span id="lobby-name" class="who"></span>
+    </div>
+  </header>
+  <div class="lobby-grid">
+    <section>
+      <h2>Pöydät</h2>
+      <div id="table-list" class="table-list"></div>
+
+      <details class="create">
+        <summary>Luo oma pöytä</summary>
+        <form id="create-form" class="create-form">
+          <label>Nimi <input name="name" maxlength="24" required placeholder="Perjantain pelit"></label>
+          <label>Pieni blindi
+            <select name="sb">
+              <option>1</option><option>2</option><option selected>5</option><option>10</option>
+              <option>25</option><option>50</option><option>100</option><option>250</option>
+              <option>500</option><option>1000</option>
+            </select>
+          </label>
+          <label>Paikkoja
+            <select name="seats"><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option><option>9</option></select>
+          </label>
+          <button class="btn" type="submit">Luo pöytä</button>
+        </form>
+      </details>
+    </section>
+    <aside>
+      <section class="card-panel">
+        <h2>Pankki</h2>
+        <p class="muted small">Pelimerkit, joita et ole tuonut pöytään.</p>
+        <button id="bonus-btn" class="btn gold" type="button">Hae päivän bonus</button>
+        <p id="bonus-note" class="muted small"></p>
+      </section>
+      <section class="card-panel">
+        <h2>Suurimmat pinot</h2>
+        <ol id="top-list" class="top-list"></ol>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<!-- Pelipöytä -->
+<main id="screen-table" class="screen tablescreen" hidden>
+  <header class="topbar">
+    <div class="tinfo">
+      <strong id="tname"></strong>
+      <span id="tblinds" class="muted"></span>
+    </div>
+    <div class="topbar-right">
+      <span class="bank" title="Pankkisi"><span class="chip-dot"></span><span id="table-bank">0</span></span>
+      <button id="btn-side" class="btn ghost only-mobile" type="button">Loki ja chat</button>
+      <button id="btn-leave" class="btn ghost" type="button">Poistu</button>
+    </div>
+  </header>
+
+  <div class="tablemain">
+    <section class="stage">
+      <div class="felt-wrap" id="felt-wrap">
+        <div class="felt"></div>
+        <div class="center" id="center"></div>
+        <div class="seats" id="seats"></div>
+      </div>
+    </section>
+
+    <aside id="side" class="side">
+      <div class="tabs" role="tablist">
+        <button class="tab on" data-tab="log" role="tab" type="button">Tapahtumat</button>
+        <button class="tab" data-tab="chat" role="tab" type="button">Chat</button>
+        <button class="tab only-mobile close" data-tab="close" type="button">Sulje</button>
+      </div>
+      <ol id="log" class="log"></ol>
+      <ol id="chat" class="log chat" hidden></ol>
+      <form id="chat-form" class="chat-form" hidden autocomplete="off">
+        <input id="chat-input" maxlength="200" placeholder="Kirjoita viesti">
+        <button class="btn" type="submit">Lähetä</button>
+      </form>
+    </aside>
+  </div>
+
+  <footer class="dock">
+    <div class="dock-tools" id="dock-tools"></div>
+    <div id="actions" class="actions"></div>
+  </footer>
+</main>
+
+<!-- Modaali -->
+<div id="modal" class="modal" hidden>
+  <form id="modal-form" class="modal-card">
+    <h3 id="modal-title"></h3>
+    <p id="modal-text" class="muted small"></p>
+    <input id="modal-input" type="number" inputmode="numeric" step="1" required>
+    <div class="quick" id="modal-quick"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" type="button" id="modal-cancel">Peruuta</button>
+      <button class="btn primary" type="submit" id="modal-ok">OK</button>
+    </div>
+  </form>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

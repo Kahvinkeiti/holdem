@@ -1,0 +1,17 @@
+{
+  "name": "holdem-online",
+  "version": "1.0.0",
+  "description": "Moninpeli Texas Hold'em pelirahalla (ei oikeaa rahaa)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/sim.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "license": "MIT"
+}
